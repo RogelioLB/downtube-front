@@ -57,11 +57,11 @@ export default function ModalVideo({show,onClose, video,url}){
     useEffect(()=>{
         socket.on('download',(data)=>{
             setPercentage(data.percentage)
-            console.log(data)
         })
         socket.on('downloaded',(data)=>{
             console.log(data)
             setDonloading(false)
+            setPercentage(null)
         })
     },[])
 
@@ -73,8 +73,6 @@ export default function ModalVideo({show,onClose, video,url}){
             body:JSON.stringify({itag,url,uid:socket.id}),
             method:'POST'
         }).then(res=>res.json()).then(data=>{
-            console.log(data)
-            setDonloading(true)
             setLink(data.link)
         }).catch(err=>{
             setDonloading(false)
@@ -88,7 +86,7 @@ export default function ModalVideo({show,onClose, video,url}){
                 <ModalMain show={show} onClick={e=>e.stopPropagation()}>
                     <Image alt={video?.title} src={image.url} width={image.width} height={image.height}/>
                     {
-                        !downloading && !percentage && (
+                        !downloading && (
                             <>
                                 <Formats>
                                     {
@@ -116,7 +114,7 @@ export default function ModalVideo({show,onClose, video,url}){
                         )
                     }
                     {
-                        percentage && !downloading && (
+                        link && !downloading && (
                             <a href={link} download>Descargar</a>
                         )
                     }
