@@ -4,7 +4,6 @@ import styles from '../styles/Home.module.css'
 import {socket} from '../socket'
 import NavBar from '../components/NavBar'
 import SearchBar from '../components/SearchBar'
-import { CircularProgress } from '@mui/material'
 import Card from '../components/Card'
 import ModalVideo from '../components/ModalVideo'
 
@@ -30,7 +29,7 @@ export default function Home() {
         <SearchBar onClick={data=>setVideo(data)} setLoading={setLoading} url={url} setUrl={setUrl}/>
         {
           loading && (
-            <CircularProgress/>
+            <></>
           )
         }
         {

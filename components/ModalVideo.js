@@ -1,8 +1,8 @@
-import { LinearProgress } from '@mui/material'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import {socket} from '../socket'
+import ProgressBar from './ProgressBar'
 
 const ModalContainer = styled.div`
 position:fixed;
@@ -15,16 +15,17 @@ pointer-events: ${props => props.show ? 'visible' : 'none'};
 `
 
 const ModalMain = styled.div`
-transform:${props=>props.show ? 'translate(-50%,-50%);' : 'translate(-50%,-200%)'};
+transform:${props=>props.show ? 'translate(-50%,-50%);' : 'translate(-50%,-1000%)'};
 top: 50%;
 left: 50%;
 position: fixed;
 margin:0 auto;
 width:80%;
 padding:10px;
-height:60%;
 background-color:#fff;
 transition:.4s ease;
+display:flex;
+flex-direction: column;
 `
 
 const Button = styled.button`
@@ -33,6 +34,7 @@ cursor:pointer;
 border:none;
 color:#fff;
 padding:10px 15px;
+border-radius:2px;
 margin:10px 5px;
 `
 
@@ -41,10 +43,40 @@ display:flex;
 flex-wrap: wrap;
 justify-content:space-around;
 `
+const ContainerImage = styled.div`
+display:flex;
+@media (max-width: 490px) {
+    flex-direction: column;
+  }
+`
+
+const Header = styled.h3`
+font-size:1.3em;
+margin:0 10px;
+@media (min-width: 768px) {
+    font-size:2em;
+}
+`
+
+const Download = styled.a`
+background:black;
+color:white;
+display:inline-block;
+width:100%;
+text-align:center;
+padding:10px 15px;
+`
+
+const ContainerDownload = styled.div`
+display:flex;
+align-items: center;
+justify-content: center;
+flex:1;
+`
 
 export default function ModalVideo({show,onClose, video,url}){
     const [percentage,setPercentage] = useState(null);
-    const [downloading,setDonloading] = useState(false);
+    const [downloading,setDownloading] = useState(false);
     const [link,setLink] = useState('');
     const image = video?.thumbnails[3];
     const formatAudio = video?.formatsAudio[0];
@@ -56,11 +88,11 @@ export default function ModalVideo({show,onClose, video,url}){
 
     useEffect(()=>{
         socket.on('download',(data)=>{
-            setPercentage(data.percentage)
+            setPercentage(data.percentage?.total || data.percentage)
         })
         socket.on('downloaded',(data)=>{
             console.log(data)
-            setDonloading(false)
+            setDownloading(false)
             setPercentage(null)
         })
     },[])
@@ -73,9 +105,10 @@ export default function ModalVideo({show,onClose, video,url}){
             body:JSON.stringify({itag,url,uid:socket.id}),
             method:'POST'
         }).then(res=>res.json()).then(data=>{
+            setDownloading(true)
             setLink(data.link)
         }).catch(err=>{
-            setDonloading(false)
+            setDownloading(false)
         })
     }
 
@@ -84,7 +117,10 @@ export default function ModalVideo({show,onClose, video,url}){
         {video && (
             <ModalContainer show={show} onClick={onClose}>
                 <ModalMain show={show} onClick={e=>e.stopPropagation()}>
-                    <Image alt={video?.title} src={image.url} width={image.width} height={image.height}/>
+                    <ContainerImage>
+                        <Image alt={video?.title} src={image.url} width={image.width} height={image.height}/>
+                        <Header>Seleccionar formato:</Header>
+                    </ContainerImage>
                     {
                         !downloading && (
                             <>
@@ -108,16 +144,18 @@ export default function ModalVideo({show,onClose, video,url}){
                             </>
                         )
                     }
+                    <ContainerDownload>
                     {
                         percentage && (
-                            <LinearProgress variant='determinate' value={percentage.total} sx={{height:20,borderRadius:5}}/>
+                            <ProgressBar type="linear" percentage={percentage}/>
                         )
                     }
                     {
                         link && !downloading && (
-                            <a href={link} download>Descargar</a>
+                            <Download href={link} download>Descargar</Download>
                         )
                     }
+                     </ContainerDownload>
                 </ModalMain>
             </ModalContainer>
         )}

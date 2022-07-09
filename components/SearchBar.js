@@ -1,6 +1,7 @@
 import styled from "styled-components"
-import {Search} from '@mui/icons-material'
 import { useState } from "react"
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import { faSearch } from "@fortawesome/free-solid-svg-icons"
 
 const Bar = styled.form`
 display:flex;
@@ -52,7 +53,7 @@ export default function SearchBar({onClick,setLoading,url,setUrl}){
         <Bar>
             <Input value={url} placeholder='http://youtube.com/' onChange={e=>setUrl(e.target.value)}/>
             <Button onClick={handleClick}>
-                <Search />
+                <FontAwesomeIcon  icon={faSearch} />
             </Button>
         </Bar>
     )

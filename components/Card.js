@@ -1,4 +1,5 @@
-import { Download } from '@mui/icons-material'
+import { faDownload } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Image from 'next/image'
 import styled from 'styled-components'
 
@@ -47,6 +48,7 @@ align-items: center;
 justify-content: center;
 box-shadow:0 0 4px rgba(0,0,0,.7);
 cursor: pointer;
+color:white;
 `
 
 export default function Card({videoDetails,showVideoModal}){
@@ -59,12 +61,12 @@ export default function Card({videoDetails,showVideoModal}){
             <Details>
                 <Title>{videoDetails.title}</Title>
                 <Author>
-                    <Image alt={author.name} src={authorImage.url} width={authorImage.width} height={authorImage.height} style={{borderRadius:"50%"}}/>
+                    <Image alt={author.name} src={authorImage.url} width={authorImage.width} height={authorImage.height} style={{borderRadius:"50%"}} />
                     <Name>{author.name}</Name>
                 </Author>
             </Details>
             <Button onClick={()=>showVideoModal(true)}>
-                <Download sx={{color:'#fff'}}/>
+                <FontAwesomeIcon icon={faDownload} size={14}/>
             </Button>
         </Container>
     )
